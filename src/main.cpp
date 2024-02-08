@@ -4,12 +4,15 @@
 
 int main(int argv, char** args) {
 
+    // Create objects from classes, all sharing base structure BoardVariables
     GUI gui;
     Game game;
     SDL_Event event;
 
-    game.InitGUI(gui);
+    // Run the game loop
     game.GameLoop(gui, event);
+
+    // Destructors take care of clearup
 
     return 0;
 }

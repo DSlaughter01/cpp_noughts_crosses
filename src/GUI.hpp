@@ -8,13 +8,13 @@ class GUI : public BoardVariables {
 
     public:
         GUI();
+        ~GUI();
         void ChangeText(const char* gameState);
         void CreateEndMessage(const char* res);
         void UpdateGraphicalArray();
         void RenderEndMessage();
         void RenderScreen();
         void RenderBoard();
-        void Close();
 
     private:
         TTF_Font* GAME_FONT = nullptr;
@@ -23,8 +23,8 @@ class GUI : public BoardVariables {
         SDL_Rect boardRect[3][3] {};
 
         // Colours
-        static const SDL_Color whiteRender;
-        static const SDL_Color blackRender;
+        const SDL_Color whiteRender = {230, 230, 230};
+        const SDL_Color blackRender = {10, 10, 10};
         
         // Window and renderer
         static SDL_Window* window;

@@ -3,10 +3,6 @@
 SDL_Window* GUI::window = nullptr;
 SDL_Renderer* GUI::renderer = nullptr;
 
-// Initialise static colours
-const SDL_Color GUI::whiteRender = {230, 230, 230};
-const SDL_Color GUI::blackRender = {10, 10, 10};
-
 GUI::GUI() {
 
     // Create window and renderer
@@ -35,6 +31,29 @@ GUI::GUI() {
         std::cout << "Game font not initialised" << std::endl;
 }
 
+GUI::~GUI() {
+    
+    for (int i = 0; i < 3; i ++) {
+        for (int j = 0; j < 3; j++) {
+            SDL_DestroyTexture(boardTextures[i][j]);
+        }
+    }
+
+    SDL_DestroyTexture(textTexture);
+    textTexture = nullptr;
+
+    SDL_DestroyRenderer(renderer);
+    renderer = nullptr;
+
+    SDL_DestroyWindow(window);
+    window = nullptr;
+
+    TTF_CloseFont(GAME_FONT);
+    GAME_FONT = nullptr;
+
+    TTF_Quit();
+}
+
 void GUI::RenderBoard() {
 
     SDL_SetRenderDrawColor(renderer, 230, 230, 230, 0);
@@ -61,8 +80,8 @@ void GUI::UpdateGraphicalArray() {
         for (int j = 0; j < 3; j++) {
 
             // Set x and y coordinates
-            int x = SIDE_GAP + (i * SQUARE_DIM);
-            int y = TOP_GAP + (j * SQUARE_DIM);
+            int x = SIDE_PADDING + (i * SQUARE_DIM);
+            int y = TOP_PADDING + (j * SQUARE_DIM);
 
             // Create surfaces for each square
             SDL_Surface* squareSurface = TTF_RenderText_Solid(GAME_FONT, gameBoard[i][j], whiteRender);
@@ -92,6 +111,8 @@ void GUI::UpdateGraphicalArray() {
 // The gameState is the player or game over
 void GUI::ChangeText(const char* gameState) {
 
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+    
     if (textTexture) {
         SDL_DestroyTexture(textTexture);
         textTexture = nullptr;
@@ -119,11 +140,11 @@ void GUI::ChangeText(const char* gameState) {
 
     // Destination rectangle height and width for the text
     destRectText.w = BOARD_DIM;
-    destRectText.h = SIDE_GAP;
+    destRectText.h = SIDE_PADDING;
 
     // Centre the text based on its size
     destRectText.x = (WIN_WIDTH - destRectText.w) / 2;
-    destRectText.y = (SIDE_GAP + destRectText.h) / 2;
+    destRectText.y = (SIDE_PADDING + destRectText.h) / 2;
 }
 
 void GUI::CreateEndMessage(const char* res) {
@@ -149,7 +170,7 @@ void GUI::CreateEndMessage(const char* res) {
 
     // Placement on the screen
     destRectText.w = BOARD_DIM;
-    destRectText.h = SIDE_GAP;
+    destRectText.h = SIDE_PADDING;
     destRectText.x = (WIN_WIDTH - destRectText.w) / 2;
     destRectText.y = (WIN_HEIGHT - destRectText.h) / 2;
 }
@@ -172,27 +193,4 @@ void GUI::RenderEndMessage() {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);
     SDL_RenderPresent(renderer);
-}
-
-void GUI::Close() {
-
-    for (int i = 0; i < 3; i ++) {
-        for (int j = 0; j < 3; j++) {
-            SDL_DestroyTexture(boardTextures[i][j]);
-        }
-    }
-
-    SDL_DestroyTexture(textTexture);
-    textTexture = nullptr;
-
-    SDL_DestroyRenderer(renderer);
-    renderer = nullptr;
-
-    SDL_DestroyWindow(window);
-    window = nullptr;
-
-    TTF_CloseFont(GAME_FONT);
-    GAME_FONT = nullptr;
-
-    TTF_Quit();
 }
