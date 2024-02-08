@@ -3,6 +3,7 @@
 SDL_Window* GUI::window = nullptr;
 SDL_Renderer* GUI::renderer = nullptr;
 
+// Constructor
 GUI::GUI() {
 
     // Create window and renderer
@@ -31,6 +32,7 @@ GUI::GUI() {
         std::cout << "Game font not initialised" << std::endl;
 }
 
+// Destructor
 GUI::~GUI() {
     
     for (int i = 0; i < 3; i ++) {
@@ -54,25 +56,7 @@ GUI::~GUI() {
     TTF_Quit();
 }
 
-void GUI::RenderBoard() {
-
-    SDL_SetRenderDrawColor(renderer, 230, 230, 230, 0);
-
-    // Vertical lines 
-    SDL_RenderDrawLine(renderer, vertLineX1, horLineY1, vertLineX1, horLineY4);
-    SDL_RenderDrawLine(renderer, vertLineX2, horLineY1, vertLineX2, horLineY4);
-    SDL_RenderDrawLine(renderer, vertLineX3, horLineY1, vertLineX3, horLineY4);
-    SDL_RenderDrawLine(renderer, vertLineX4, horLineY1, vertLineX4, horLineY4);
-
-    // Horizontal lines
-    SDL_RenderDrawLine(renderer, vertLineX1, horLineY1, vertLineX4, horLineY1);
-    SDL_RenderDrawLine(renderer, vertLineX1, horLineY2, vertLineX4, horLineY2);
-    SDL_RenderDrawLine(renderer, vertLineX1, horLineY3, vertLineX4, horLineY3);
-    SDL_RenderDrawLine(renderer, vertLineX1, horLineY4, vertLineX4, horLineY4);
-
-    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 0);
-}
-
+// Update boardTextures based on what is in gameBoard
 void GUI::UpdateGraphicalArray() {
 
     // Render noughts and crosses
@@ -108,11 +92,50 @@ void GUI::UpdateGraphicalArray() {
     }
 }
 
+// Render the grid and contents of each square
+void GUI::RenderBoard() {
+
+    SDL_SetRenderDrawColor(renderer, 230, 230, 230, 0);
+
+    // Vertical lines 
+    SDL_RenderDrawLine(renderer, vertLineX1, horLineY1, vertLineX1, horLineY4);
+    SDL_RenderDrawLine(renderer, vertLineX2, horLineY1, vertLineX2, horLineY4);
+    SDL_RenderDrawLine(renderer, vertLineX3, horLineY1, vertLineX3, horLineY4);
+    SDL_RenderDrawLine(renderer, vertLineX4, horLineY1, vertLineX4, horLineY4);
+
+    // Horizontal lines
+    SDL_RenderDrawLine(renderer, vertLineX1, horLineY1, vertLineX4, horLineY1);
+    SDL_RenderDrawLine(renderer, vertLineX1, horLineY2, vertLineX4, horLineY2);
+    SDL_RenderDrawLine(renderer, vertLineX1, horLineY3, vertLineX4, horLineY3);
+    SDL_RenderDrawLine(renderer, vertLineX1, horLineY4, vertLineX4, horLineY4);
+
+    // Render the contents of each square
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            SDL_RenderCopy(renderer, boardTextures[i][j], NULL, &boardRect[i][j]);
+        }
+    }
+
+    // Render top text
+    SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);
+
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 0);
+}
+
+void GUI::RenderScreen() {
+
+    SDL_RenderClear(renderer);
+    RenderBoard();
+    SDL_RenderPresent(renderer);
+}
+
 // The gameState is the player or game over
 void GUI::ChangeText(const char* gameState) {
 
+    // Background colour dark grey
     SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
-    
+
+    // Destroy any preexisting textTexture to replace it later on
     if (textTexture) {
         SDL_DestroyTexture(textTexture);
         textTexture = nullptr;
@@ -165,6 +188,7 @@ void GUI::CreateEndMessage(const char* res) {
     if (!textTexture)
         std::cerr << "Texture not created: " << SDL_GetError() << std::endl;
     
+    // Don't need surface anymore, so delete
     SDL_FreeSurface(textSurface);
     textSurface = nullptr;
 
@@ -175,20 +199,7 @@ void GUI::CreateEndMessage(const char* res) {
     destRectText.y = (WIN_HEIGHT - destRectText.h) / 2;
 }
 
-void GUI::RenderScreen() {
-
-    SDL_RenderClear(renderer);
-    RenderBoard();
-    SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);
-    
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            SDL_RenderCopy(renderer, boardTextures[i][j], NULL, &boardRect[i][j]);
-        }
-    }
-    SDL_RenderPresent(renderer);
-}
-
+// Render the end screen with the winner (if there is one) or draw
 void GUI::RenderEndMessage() {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);

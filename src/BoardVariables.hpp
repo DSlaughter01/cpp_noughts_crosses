@@ -9,7 +9,6 @@ struct BoardVariables {
     const char* DRAW = "D";
     static const char* playerTurn;
     bool isOver {};
- 
     static const char* gameBoard[3][3];
 
     // Space around the borders
