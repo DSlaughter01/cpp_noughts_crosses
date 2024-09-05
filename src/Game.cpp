@@ -123,7 +123,7 @@ void Game::GameLoop() {
 
     ChooseAISettings();
 
-    // Only render the screen when the screen changes. This line brings up the empty board
+    // Only render the screen when the screen changes
     gui.Update(board, EMPTY, playerTurn, AIPlayer);
 
     SDL_Event event;
