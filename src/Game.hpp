@@ -2,18 +2,34 @@
 #include "SDL2/SDL.h"
 #include "BoardVariables.hpp"
 #include "GUI.hpp"
+#include "AI.hpp"
 
 class Game : public BoardVariables {
 
     public:
         Game();
         ~Game();
-        void InitGUI(GUI &gui);
-        void HandleClick(GUI &gui);
-        void GameLoop(GUI &gui, SDL_Event event);
-        const char* CheckGameOver(const char* board[3][3]);
+
+        void HandleClick();
+        void GameLoop();
+        char FindWinner();
+        void ChooseAISettings();
+        void ReactToMove();
         
+    public:
+
+        Board board;
+
     private:
-        bool isRunning {};
-        int takenSquares {};     
+
+        AI ai;
+        GUI gui;
+
+        int gameState;
+        bool isRunning;
+        int takenSquares;  
+        bool isOver;
+        char playerTurn;
+        char AIPlayer;
+        bool isUsingAI;
 };
