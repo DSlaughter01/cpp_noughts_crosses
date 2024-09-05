@@ -77,14 +77,15 @@ GUI::~GUI() {
     SDL_Quit();
 }
 
+
 // Update boardTextures based on what is in gameBoard
-void GUI::UpdateGraphicalArray(char board[3][3]) {
+void GUI::UpdateGraphicalArray(Board board) {
 
     // Render noughts and crosses
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
 
-            const char gBSquare = board[i][j];
+            const char gBSquare = board.b[i][j];
             char text[2] = {gBSquare, '\0'};
 
             // Set x and y coordinates
@@ -105,18 +106,16 @@ void GUI::UpdateGraphicalArray(char board[3][3]) {
             SDL_FreeSurface(squareSurface);
             squareSurface = nullptr;
 
-            // Destination rectangle height and width for the text
+            // Destination rectangle
             boardRect[i][j].w = SQUARE_DIM - 4;
             boardRect[i][j].h = SQUARE_DIM - 4;
-
-            // Centre the text based on its size
             boardRect[i][j].x = x + 2;
             boardRect[i][j].y = y + 2;
         }
     }
 }
 
-// The gameState is the player or game over
+
 void GUI::CreateTextTexture() {
 
     // Destroy any preexisting textTexture to replace it later on
@@ -139,7 +138,7 @@ void GUI::CreateTextTexture() {
     SDL_FreeSurface(textSurface);
     textSurface = nullptr;
 
-    // Destination rectangle height and width for the text
+    // Destination rectangle
     destRectText.w = BOARD_DIM;
     destRectText.h = SIDE_PADDING;
     destRectText.x = (WIN_WIDTH - destRectText.w) / 2;
@@ -149,16 +148,18 @@ void GUI::CreateTextTexture() {
 
 void GUI::SetText(char result, char playerTurn, char AIPlayer) {
 
-    // Decide which text to put in
+    // If the game is over
     if (result == X)
         currText = "Player X wins!";
     else if (result == O)
         currText = "Player O wins!";
     else if (result == DRAW)
         currText = "It's a draw!";
+
+    // If the game is not over
     else if (result == EMPTY) {
 
-        // Choose text to display based on player turn an AI
+        // Choose text to display based on player turn and AI
         if (playerTurn == AIPlayer)
             currText = "AI thinking";
         else if (playerTurn == X)
@@ -171,9 +172,9 @@ void GUI::SetText(char result, char playerTurn, char AIPlayer) {
 }
 
 
+void GUI::RenderScreen() {
 
-// Render the grid and contents of each square
-void GUI::RenderBoard() {
+    SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 230, 230, 230, 0);
 
@@ -200,10 +201,14 @@ void GUI::RenderBoard() {
     SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);
     
     SDL_SetRenderDrawColor(renderer, 10, 10, 10, 0);
+    
+    SDL_RenderPresent(renderer);
 }
 
-void GUI::RenderScreen() {
-    SDL_RenderClear(renderer);
-    RenderBoard();
-    SDL_RenderPresent(renderer);
+void GUI::Update(Board board, char result, char playerTurn, char AIPlayer) {
+
+    UpdateGraphicalArray(board);
+    SetText(result, playerTurn, AIPlayer);
+    CreateTextTexture();
+    RenderScreen();
 }

@@ -57,10 +57,7 @@ void Game::ReactToMove() {
     playerTurn = (playerTurn == X) ? O : X;
 
     // Reflect changes in GUI
-    gui.UpdateGraphicalArray(board.b);
     char result = FindWinner();
-
-    gui.SetText(result, playerTurn, AIPlayer);
 
     // Check if this results in Game Over, and display end message if so
     bool isTerminal = (result == EMPTY ? false : true);
@@ -70,7 +67,7 @@ void Game::ReactToMove() {
     }
 
     // Render the screen when it changes
-    gui.RenderScreen();
+    gui.Update(board, result, playerTurn, AIPlayer);
 }
 
 
@@ -102,14 +99,14 @@ char Game::FindWinner() {
 void Game::ChooseAISettings() {
 
     // Choose whether to use AI, and if so, for which player
-    char usingAI = EMPTY;
+    char AIChoice = EMPTY;
 
-    while (usingAI != 'y' && usingAI != 'n') {
+    while (AIChoice != 'y' && AIChoice != 'n') {
         std::cout << "Using AI? (y/n)" << std::endl;
-        std::cin >> usingAI;
+        std::cin >> AIChoice;
     }
 
-    if (usingAI == 'y') {
+    if (AIChoice == 'y') {
 
         isUsingAI = true;
 
@@ -127,8 +124,7 @@ void Game::GameLoop() {
     ChooseAISettings();
 
     // Only render the screen when the screen changes. This line brings up the empty board
-    gui.SetText(EMPTY, playerTurn, AIPlayer);
-    gui.RenderScreen();
+    gui.Update(board, EMPTY, playerTurn, AIPlayer);
 
     SDL_Event event;
 

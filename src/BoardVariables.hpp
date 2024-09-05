@@ -37,6 +37,7 @@ struct BoardVariables {
     // Text
     const char* currText;
 
+    // Structures
     struct Board {
         char b[3][3];
     };
@@ -47,5 +48,4 @@ struct BoardVariables {
     };
 
     Coordinate NO_COORD = {-1, -1};
-
 };

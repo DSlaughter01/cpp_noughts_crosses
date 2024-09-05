@@ -10,11 +10,17 @@ class GUI : public BoardVariables {
         GUI();
         ~GUI();
 
-        void CreateTextTexture();
+        void Update(Board board, char result, char playerTurn, char AIPlayer);
+
+    private:
+        void UpdateGraphicalArray(Board board);
+
         void SetText(char result, char playerTurn, char AIPlayer);
-        void UpdateGraphicalArray(char board[3][3]);
+        
+        // Creates the texture for the relevant text to be displayed
+        void CreateTextTexture();
+
         void RenderScreen();
-        void RenderBoard();
 
     private:
         TTF_Font* GAME_FONT = nullptr;
