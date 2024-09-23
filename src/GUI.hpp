@@ -10,12 +10,15 @@ class GUI : public BoardVariables {
         GUI();
         ~GUI();
 
+        // Sets the initial screen for choosing AI settings
+        void ChooseAISettings(int stage);
+
         // Calls all 4 of the private functions below to update the GUI
-        void Update(Board board, char result, char playerTurn, char AIPlayer);
+        void Update(Board &board, char result, char playerTurn, char AIPlayer);
 
     private:
         // Updates Xs and Os in the board array for display
-        void UpdateGraphicalArray(Board board);
+        void UpdateGraphicalArray(Board &board);
 
         // Chooses the text to display at the top of the screen depending on current game details
         void SetText(char result, char playerTurn, char AIPlayer);
@@ -34,7 +37,6 @@ class GUI : public BoardVariables {
 
         // Colours
         const SDL_Color whiteRender = {230, 230, 230};
-        const SDL_Color blackRender = {10, 10, 10};
         
         // Window and renderer
         SDL_Window* window;

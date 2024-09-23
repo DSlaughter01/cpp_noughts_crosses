@@ -56,16 +56,16 @@ void Game::ReactToMove() {
     // Switch player
     playerTurn = (playerTurn == X) ? O : X;
 
-    // Reflect changes in GUI
+    // See if there is a winner
     char result = FindWinner();
 
     // Check if this results in Game Over, and display end message if so
     bool isTerminal = (result == EMPTY ? false : true);
 
-    if (isTerminal) {
-        gameState = s_END;
-    }
-
+    // Change game state if the game is over
+    if (isTerminal) 
+        gameState = s_GAME_OVER;
+    
     // Render the screen when it changes
     gui.Update(board, result, playerTurn, AIPlayer);
 }
@@ -96,23 +96,81 @@ char Game::FindWinner() {
         return EMPTY;
 }
 
-void Game::ChooseAISettings() {
+void Game::ChooseAISettings(SDL_Event &event) {
 
     // Choose whether to use AI, and if so, for which player
     char AIChoice = EMPTY;
 
-    while (AIChoice != 'y' && AIChoice != 'n') {
-        std::cout << "Using AI? (y/n)" << std::endl;
-        std::cin >> AIChoice;
+    while (AIChoice == EMPTY && isRunning) {        
+        
+        gui.ChooseAISettings(1);
+    
+        while (SDL_WaitEvent(&event)) {
+
+            if (event.type == SDL_QUIT) {
+                isRunning = false;
+                break;
+            }
+
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+
+                // Get the position of the mouse
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+
+                if (x >= leftButtonRect.x && x <= leftButtonRect.x + leftButtonRect.w &&
+                    y >= leftButtonRect.y && y <= leftButtonRect.y + leftButtonRect.h) {
+                    
+                    AIChoice = 'y';
+                    break;
+                }
+
+                if (x >= rightButtonRect.x && x <= rightButtonRect.x + rightButtonRect.w &&
+                    y >= rightButtonRect.y && y <= rightButtonRect.y + rightButtonRect.h) {
+                    
+                    AIChoice = 'n';
+                    break;
+                }
+            }
+        }
     }
 
     if (AIChoice == 'y') {
 
-        isUsingAI = true;
+        gui.ChooseAISettings(2);
 
-        while (AIPlayer != X && AIPlayer != O) {
-            std::cout << "Please select AI side (X/O)" << std::endl;
-            std::cin >> AIPlayer;
+        isUsingAI= true;
+
+        while (AIPlayer == EMPTY) {
+
+            while (SDL_WaitEvent(&event)) {
+               
+                if (event.type == SDL_QUIT) {
+                    isRunning = false;
+                    break;
+                }
+
+                if (event.type == SDL_MOUSEBUTTONDOWN) {
+
+                    // Get the position of the mouse
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+
+                    if (x >= leftButtonRect.x && x <= leftButtonRect.x + leftButtonRect.w &&
+                        y >= leftButtonRect.y && y <= leftButtonRect.y + leftButtonRect.h) {
+                        
+                        AIPlayer = O;
+                        break;
+                    }
+
+                    if (x >= rightButtonRect.x && x <= rightButtonRect.x + rightButtonRect.w &&
+                        y >= rightButtonRect.y && y <= rightButtonRect.y + rightButtonRect.h) {
+                        
+                        AIPlayer = X;
+                        break;
+                    }
+                }
+            }
         }
 
         ai.SetAIPlayer(AIPlayer);
@@ -121,19 +179,20 @@ void Game::ChooseAISettings() {
 
 void Game::GameLoop() {
 
-    ChooseAISettings();
+    SDL_Event event;
+    isRunning = true;
+
+    ChooseAISettings(event);
+
+    // Set up initial parameters for the game
+    gameState = s_IN_PLAY;
 
     // Only render the screen when the screen changes
     gui.Update(board, EMPTY, playerTurn, AIPlayer);
 
-    SDL_Event event;
-
-    gameState = s_IN_PLAY;
-    isRunning = true;
-
     while (isRunning) {
- 
-        if (isUsingAI && playerTurn == AIPlayer && gameState == s_IN_PLAY) {
+        
+        if (isUsingAI == true && playerTurn == AIPlayer && gameState == s_IN_PLAY) {
 
             board = ai.MakeOptimalMove(board, playerTurn);
             ReactToMove();

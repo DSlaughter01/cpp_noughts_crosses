@@ -13,7 +13,7 @@ class Game : public BoardVariables {
         void HandleClick();
         void GameLoop();
         char FindWinner();
-        void ChooseAISettings();
+        void ChooseAISettings(SDL_Event &event);
         void ReactToMove();
         
     public:

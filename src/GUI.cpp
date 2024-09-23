@@ -79,7 +79,7 @@ GUI::~GUI() {
 
 
 // Update boardTextures based on what is in gameBoard
-void GUI::UpdateGraphicalArray(Board board) {
+void GUI::UpdateGraphicalArray(Board &board) {
 
     // Render noughts and crosses
     for (int i = 0; i < 3; i++) {
@@ -172,9 +172,61 @@ void GUI::SetText(char result, char playerTurn, char AIPlayer) {
 }
 
 
-void GUI::RenderScreen() {
+void GUI::ChooseAISettings(int stage) {
+
+    SDL_Surface* leftSurf = nullptr;
+    SDL_Surface* rightSurf = nullptr;
+
+    char leftButText[2] = {' ', '\0'};
+    char rightButText[2] = {' ', '\0'};
+
+    if (stage == 1) {
+        // Top text, first stage
+        currText = "Play against AI?";
+
+        // Left and right buttons
+        leftButText[0] = 'Y';
+        rightButText[0] = 'N';
+
+        leftSurf = TTF_RenderText_Solid(GAME_FONT, leftButText, whiteRender);
+        rightSurf = TTF_RenderText_Solid(GAME_FONT, rightButText, whiteRender); 
+    }
+
+    if (stage == 2) {
+        // Top text, second stage
+        currText = "Choose AI side";
+
+        // Left and right buttons
+        leftButText[0] = 'X';
+        rightButText[0] = 'O';
+
+        leftSurf = TTF_RenderText_Solid(GAME_FONT, leftButText, whiteRender);
+        rightSurf = TTF_RenderText_Solid(GAME_FONT, rightButText, whiteRender); 
+    }
 
     SDL_RenderClear(renderer);
+
+    SDL_Texture* leftTex = SDL_CreateTextureFromSurface(renderer, leftSurf);
+    SDL_Texture* rightTex = SDL_CreateTextureFromSurface(renderer, rightSurf);
+
+    SDL_FreeSurface(leftSurf);
+    leftSurf = nullptr;
+    SDL_FreeSurface(rightSurf);
+    rightSurf = nullptr;
+
+    // Top Text
+    CreateTextTexture();
+    SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);    
+
+    // Left and right buttons
+    SDL_RenderCopy(renderer, leftTex, NULL, &leftButtonRect);
+    SDL_RenderCopy(renderer, rightTex, NULL, &rightButtonRect);
+
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 0);  
+    SDL_RenderPresent(renderer);
+}
+
+void GUI::RenderScreen() {
 
     SDL_SetRenderDrawColor(renderer, 230, 230, 230, 0);
 
@@ -190,23 +242,22 @@ void GUI::RenderScreen() {
     SDL_RenderDrawLine(renderer, vertLineX1, horLineY3, vertLineX4, horLineY3);
     SDL_RenderDrawLine(renderer, vertLineX1, horLineY4, vertLineX4, horLineY4);
 
-    // Render the contents of each square
+    // Rendering logic
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             SDL_RenderCopy(renderer, boardTextures[i][j], NULL, &boardRect[i][j]);
         }
     }
 
-    // Render top text
-    SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);
-    
-    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 0);
-    
+    SDL_RenderCopy(renderer, textTexture, NULL, &destRectText);    
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 0);  
     SDL_RenderPresent(renderer);
 }
 
-void GUI::Update(Board board, char result, char playerTurn, char AIPlayer) {
 
+void GUI::Update(Board &board, char result, char playerTurn, char AIPlayer) {
+
+    SDL_RenderClear(renderer);
     UpdateGraphicalArray(board);
     SetText(result, playerTurn, AIPlayer);
     CreateTextTexture();

@@ -1,11 +1,13 @@
 #pragma once
 
+#include "SDL2/SDL.h"
+
 struct BoardVariables {
 
     // Game state variables
     int s_PRELIM = 0;
     int s_IN_PLAY = 1;
-    int s_END = 2;
+    int s_GAME_OVER = 2;
 
     // Information about the specific game shared between Game and GUI
     char EMPTY = ' ';
@@ -48,4 +50,7 @@ struct BoardVariables {
     };
 
     Coordinate NO_COORD = {-1, -1};
+
+    SDL_Rect leftButtonRect = {vertLineX1, horLineY2, SQUARE_DIM, SQUARE_DIM};
+    SDL_Rect rightButtonRect = {vertLineX3, horLineY2, SQUARE_DIM, SQUARE_DIM};
 };
