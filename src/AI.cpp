@@ -44,7 +44,7 @@ BoardVariables::Board AI::MakeOptimalMove(Board &board, char currPlayer) {
     Coordinate move = Minimax(board, currPlayer);
 
     if (move.x != NO_COORD.x && move.y != NO_COORD.y)
-        board.b[move.x][move.y] = AIPlayer;
+        board.b[move.x][move.y] = currPlayer;
 
     return board;
 }
@@ -109,15 +109,16 @@ BoardVariables::Coordinate AI::Minimax(BoardVariables::Board board, char currPla
 
     // Find the best action: X maximises, O minimises
     if (currPlayer == X)
-        bestAction = MaxValue(board).coord;
+        bestAction = MaxValue(board, INT_MIN, INT_MAX).coord;
     else if (currPlayer == O) 
-        bestAction = MinValue(board).coord;
+        bestAction = MinValue(board, INT_MIN, INT_MAX).coord;
 
+    std::cout << "Move made." << std::endl;
     return bestAction;
 }
 
 
-AI::CoordValuePair AI::MaxValue(BoardVariables::Board board) {
+AI::CoordValuePair AI::MaxValue(BoardVariables::Board board, int alpha, int beta) {
 
     CoordValuePair result {};
 
@@ -143,11 +144,11 @@ AI::CoordValuePair AI::MaxValue(BoardVariables::Board board) {
         Board newBoard = MakeMove(board, action, X);
 
         // Get the new score by applying the min function
-        CoordValuePair newPair = MinValue(newBoard);
+        CoordValuePair newPair = MinValue(newBoard, alpha, beta);
         int newScore = newPair.value;
 
         // If the new score is better than the current score
-        if (newScore > bestScore) {
+        if (newScore >= bestScore) {
 
             // Change the best score
             bestScore = newScore;
@@ -155,15 +156,25 @@ AI::CoordValuePair AI::MaxValue(BoardVariables::Board board) {
             // Set the best action to the most recent action
             bestAction = action;
         }
+
+        // Check if the value is better than beta
+        if (newScore >= beta) {
+            break;
+        }
+
+        // Update alpha
+        alpha = std::max(alpha, newScore);
     }
 
     // Return the best action, and the best score
     result = {bestAction, bestScore};
+    std::cout << "Alpha in max: " << alpha << std::endl;
+
     return result;
 }
 
 
-AI::CoordValuePair AI::MinValue(BoardVariables::Board board) {
+AI::CoordValuePair AI::MinValue(BoardVariables::Board board, int alpha, int beta) {
 
     CoordValuePair result {};
 
@@ -189,11 +200,11 @@ AI::CoordValuePair AI::MinValue(BoardVariables::Board board) {
         Board newBoard = MakeMove(board, action, O);
 
         // Get the new score by applying the max function
-        CoordValuePair newPair = MaxValue(newBoard);
+        CoordValuePair newPair = MaxValue(newBoard, alpha, beta);
         int newScore = newPair.value;
 
         // If the new score is better than the current score,
-        if (newScore < bestScore) {
+        if (newScore <= bestScore) {
 
             // Change the best score
             bestScore = newScore;
@@ -201,10 +212,21 @@ AI::CoordValuePair AI::MinValue(BoardVariables::Board board) {
             // Set the best action to the most recent actions
             bestAction = action;
         }
+
+        // Check if the value is better than beta
+        if (newScore <= alpha) {
+            break;
+        }
+
+        // Update beta
+        beta = std::min(beta, newScore);
     }
 
     // Return the best action, and the best score
     result = {bestAction, bestScore};
+
+    std::cout << "Beta in min: " << beta << std::endl;
+
     return result;
 }
 

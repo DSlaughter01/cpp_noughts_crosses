@@ -5,15 +5,15 @@
 struct BoardVariables {
 
     // Game state variables
-    int s_PRELIM = 0;
-    int s_IN_PLAY = 1;
-    int s_GAME_OVER = 2;
+    const int s_PRELIM = 0;
+    const int s_IN_PLAY = 1;
+    const int s_GAME_OVER = 2;
 
     // Information about the specific game shared between Game and GUI
-    char EMPTY = ' ';
-    char X = 'X';
-    char O = 'O';
-    char DRAW = 'D';
+    const char EMPTY = ' ';
+    const char X = 'X';
+    const char O = 'O';
+    const char DRAW = 'D';
 
     // Space around the borders
     int TOP_PADDING = 150;

@@ -133,6 +133,7 @@ void Game::ChooseAISettings(SDL_Event &event) {
                 }
             }
         }
+
     }
 
     if (AIChoice == 'y') {
@@ -152,21 +153,20 @@ void Game::ChooseAISettings(SDL_Event &event) {
 
                 if (event.type == SDL_MOUSEBUTTONDOWN) {
 
-                    // Get the position of the mouse
                     int x, y;
                     SDL_GetMouseState(&x, &y);
 
                     if (x >= leftButtonRect.x && x <= leftButtonRect.x + leftButtonRect.w &&
                         y >= leftButtonRect.y && y <= leftButtonRect.y + leftButtonRect.h) {
                         
-                        AIPlayer = O;
+                        AIPlayer = X;
                         break;
                     }
 
                     if (x >= rightButtonRect.x && x <= rightButtonRect.x + rightButtonRect.w &&
                         y >= rightButtonRect.y && y <= rightButtonRect.y + rightButtonRect.h) {
                         
-                        AIPlayer = X;
+                        AIPlayer = O;
                         break;
                     }
                 }
